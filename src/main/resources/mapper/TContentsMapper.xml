@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cjh.blog.mapper.TContentsMapper" >
+  <resultMap id="BaseResultMap" type="com.cjh.blog.pojo.TContents" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="slug" property="slug" jdbcType="VARCHAR" />
+    <result column="created" property="created" jdbcType="INTEGER" />
+    <result column="modified" property="modified" jdbcType="INTEGER" />
+    <result column="author_id" property="authorId" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="tags" property="tags" jdbcType="VARCHAR" />
+    <result column="categories" property="categories" jdbcType="VARCHAR" />
+    <result column="hits" property="hits" jdbcType="INTEGER" />
+    <result column="comments_num" property="commentsNum" jdbcType="INTEGER" />
+    <result column="allow_comment" property="allowComment" jdbcType="BIT" />
+    <result column="allow_ping" property="allowPing" jdbcType="BIT" />
+    <result column="allow_feed" property="allowFeed" jdbcType="BIT" />
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+
+  <resultMap id="archiveBoMap" type="com.cjh.blog.pojo.BO.Archive">
+    <id column="date" property="date"/>
+    <result column="count" property="count"/>
+  </resultMap>
+
+  <select id="findReturnArchive" resultMap="archiveBoMap">
+    select FROM_UNIXTIME(created, '%Y年%m月') as date, count(*) as count from t_contents where type = 'article' and status = 'publish' group by date order by date desc
+  </select>
+
+
+  <select id="findByCatalog" resultMap="BaseResultMap" parameterType="Integer">
+    select a.*
+    from t_contents a left join t_relationships b on a.cid = b.cid
+    where b.mid = #{value} and a.status = 'publish' and a.type = 'article'
+    order by a.created desc
+  </select>
+
+</mapper>

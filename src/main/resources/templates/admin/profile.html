@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="title='个人设置',active='home'">
+<header th:replace="admin/header::headerFragment(${title},${active})"></header>
+<link href="//cdn.bootcss.com/select2/3.4.8/select2.min.css" rel="stylesheet"/>
+<body>
+<div id="wrapper">
+    <div th:replace="admin/header::header-body"></div>
+    <div class="content-page">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h4 class="page-title">个人设置</h4>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="panel panel-color panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">个人信息</h3>
+                            </div>
+                            <div class="panel-body">
+                                <form class="form-horizontal" role="form" id="user-form">
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label">账号</label>
+                                        <div class="col-md-9">
+                                            <input type="text" th:value="${session.login_user.username}" class="form-control"  readonly="readonly" disabled="disabled"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label">姓名</label>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" name="screenName" placeholder="输入您的姓名"
+                                                   th:value="${session.login_user.screenName}" required="required" aria-required="true"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label">邮箱</label>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" name="email" placeholder="输入您的邮箱"
+                                                   th:value="${session.login_user.email}" required="required" aria-required="true"/>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix pull-right">
+                                        <button type="button" class="btn btn-primary waves-effect waves-light" onclick="saveSetting()">
+                                            保存信息
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="panel panel-color panel-danger">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">修改密码</h3>
+                            </div>
+                            <div class="panel-body">
+                                <form class="form-horizontal" role="form" id="pwd-form">
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label">输入旧密码</label>
+                                        <div class="col-md-9">
+                                            <input type="password" class="form-control" name="oldPassword" required="required"
+                                                   aria-required="true"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label">输入新密码</label>
+                                        <div class="col-md-9">
+                                            <input type="password" name="password" id="password1" class="form-control" required="required"
+                                                   aria-required="true" rangelength="[6,14]"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label">确认新密码</label>
+                                        <div class="col-md-9">
+                                            <input type="password" name="repass" class="form-control" equalTo="#password1"/>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix pull-right">
+                                        <button type="submit" class="btn btn-danger waves-effect waves-light">
+                                            设置密码
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <th:block  th:if="${session.login_user} !=null and ${session.login_user.groupName}=='superAdmin'">
+
+                        <div class="col-sm-12">
+                            <h4 class="page-title">账户设置</h4>
+                        </div>
+
+<!--                        新增账户-->
+                        <div class="col-md-6">
+                            <div class="panel panel-color panel-danger">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">新建用户</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <form class="form-horizontal" role="form" id="create-user-form">
+
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">账号</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" name="username" placeholder="输入您的账号"
+                                                       required="required" aria-required="true"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">姓名</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" name="screenName" placeholder="输入您的姓名"
+                                                        required="required" aria-required="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">邮箱</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" name="email" placeholder="输入您的邮箱"
+                                                       required="required" aria-required="true"/>
+                                            </div>
+                                        </div>
+
+                                        <input type="hidden" name="groupName" id="groupName"/>
+
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">角色</label>
+                                            <div class="col-md-9">
+                                                <select id="multiple-sel" class="select2 form-control"
+                                                        data-placeholder="请选择角色...">
+                                                    <option value="user" >user</option>
+
+    <!--                                                <th:block th:if="${null == categories}">-->
+    <!--                                                    <option value="默认分类" selected="selected">默认分类</option>-->
+    <!--                                                </th:block>-->
+    <!--                                                <th:block th:unless="${null == categories}">-->
+    <!--                                                    <th:block th:each="c : ${categories}">-->
+    <!--                                                        <option th:value="${c.name}" th:text="${c.name}"-->
+    <!--                                                                th:selected="${null !=contents and adminCommons.exist_cat(c, contents.categories)}?true:false"></option>-->
+    <!--                                                    </th:block>-->
+    <!--                                                </th:block>-->
+                                                </select>
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">输入密码</label>
+                                            <div class="col-md-9">
+                                                <input type="password" name="password" id="password2" class="form-control" required="required"
+                                                       aria-required="true" rangelength="[6,14]"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">确认密码</label>
+                                            <div class="col-md-9">
+                                                <input type="password" name="repass" class="form-control" equalTo="#password2"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="clearfix pull-right">
+                                            <button type="submit" class="btn btn-danger waves-effect waves-light" >
+                                                创建用户
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+<!--                        删除账户-->
+                        <div class="col-md-6">
+                            <div class="panel panel-color panel-primary">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">账号管理</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table table-striped table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th width="15%">账号</th>
+                                            <th width="10%">姓名</th>
+                                            <th width="25%">邮箱</th>
+                                            <th>角色</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                        <th:block th:each="user : ${userList}">
+
+                                            <tr >
+                                                <td> <th:block th:text="${user.username}" /> </td>
+                                                <td> <th:block th:text="${user.screenName}" /> </td>
+                                                <td> <th:block th:text="${user.email}" /> </td>
+                                                <td> <th:block th:text="${user.groupName}" /> </td>
+                                                <td>
+                                                    <a href="javascript:void(0)" th:onclick="'disable('+${user.uid}+','+!${user.disable}+');'"
+                                                            th:class="'btn '+${user.disable?'btn-primary':'btn-inverse'}+' btn-sm waves-effect waves-light m-b-5'"><i
+                                                            class="fa fa-edit"></i> <span id="disable" th:text="${user.disable?'禁用':'解禁'}">禁用</span></a>
+                                                    <a href="javascript:void(0)" th:onclick="'del('+${user.uid}+');'"
+                                                       class="btn btn-danger btn-sm waves-effect waves-light m-b-5"><i
+                                                            class="fa fa-trash-o"></i> <span>删除</span></a>
+                                                </td>
+                                            </tr>
+
+                                        </th:block>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </th:block>
+
+
+                </div>
+                <div th:replace="admin/footer :: footer-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="admin/footer :: footer"></div>
+<script th:src="@{//cdn.bootcss.com/jquery-validate/1.15.1/jquery.validate.min.js}"></script>
+<script th:src="@{//cdn.bootcss.com/jquery-validate/1.15.1/localization/messages_zh.min.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    var tale = new $.tale();
+
+    /**
+     * 保存个人信息
+     */
+    function saveSetting() {
+        var param = $('#user-form').serialize();
+        tale.post({
+            url : /*[[@{/admin/profile} ]]*/ '/admin/profile',
+            data: param,
+            success: function (result) {
+                if(result && result.success){
+                    tale.alertOk('保存成功');
+                } else {
+                    tale.alertError(result.msg || '保存失败');
+                }
+            }
+        });
+    }
+
+    function disable(uId, disable){
+
+        tale.post({
+            url : /*[[@{/admin/disableUser} ]]*/ '/admin/disableUser',
+            data: {uId: uId, disable: disable},
+            success: function (result) {
+                if(result && result.success){
+                    tale.alertOk({
+                        text:(!disable)?'禁用成功':'解禁成功',
+                        then: function () {
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 500);
+                        }
+                    });
+                } else {
+                    tale.alertError(result.msg || (!disable)?'禁用失败':'解禁失败');
+                }
+            }
+        });
+    }
+
+    function del(uId){
+        tale.post({
+            url : /*[[@{/admin/deleteUser} ]]*/ '/admin/deleteUser',
+            data: {uId: uId},
+            success: function (result) {
+                if(result && result.success){
+                    tale.alertOk({
+                        text:'删除成功',
+                        then: function () {
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 500);
+                        }
+                    });
+                } else {
+                    tale.alertError(result.msg || '删除失败');
+                }
+            }
+        });
+    }
+
+
+    $('#create-user-form').validate({
+        submitHandler: function (form) {
+            $("#create-user-form #groupName").val($('#multiple-sel').val());
+
+            var param = $('#create-user-form').serialize();
+
+            tale.post({
+                url : /*[[@{/admin/register} ]]*/ '/admin/register',
+                data: param,
+                success: function (result) {
+                    if(result && result.success){
+                        tale.alertOk({
+                            text:'创建成功',
+                            then: function () {
+                                setTimeout(function () {
+                                    window.location.reload();
+                                }, 500);
+                            }
+                        });
+                    } else {
+                        tale.alertError(result.msg || '创建失败');
+                    }
+                }
+            });
+        }
+    });
+
+    $('#pwd-form').validate({
+        submitHandler: function (form) {
+            var params = $("#pwd-form").serialize();
+            tale.post({
+                url : /*[[@{/admin/password} ]]*/ '/admin/password',
+                data: params,
+                success: function (result) {
+                    if(result && result.success){
+                        tale.alertOk('密码修改成功');
+                    } else {
+                        tale.alertError(result.msg || '密码修改失败');
+                    }
+                }
+            });
+        }
+    });
+    /*]]>*/
+</script>
+</body>
+</html>

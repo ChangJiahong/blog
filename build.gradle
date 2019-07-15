@@ -1,0 +1,79 @@
+plugins {
+    id 'org.springframework.boot' version '2.1.3.RELEASE'
+    id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.cjh'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    /**
+     * mysql jdbc驱动
+     */
+    implementation 'mysql:mysql-connector-java:8.0.11'
+
+    /**
+     * 阿里开源 数据源框架
+     */
+    implementation 'com.alibaba:druid:1.1.0'
+
+    /**
+     * 设置LEGACYHTML5需要搭配一个额外的库NekoHTML
+     */
+    implementation 'net.sourceforge.nekohtml:nekohtml:1.9.22'
+
+    /**
+     * mybatis
+     */
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.2'
+
+    /**
+     * mapper
+     */
+    implementation 'tk.mybatis:mapper-spring-boot-starter:1.2.4'
+
+    /**
+     * org.mybatis.generator mapper映射
+     */
+    implementation 'org.mybatis.generator:mybatis-generator-core:1.3.2'
+
+    /**
+     * pagehelper  分页插件
+     */
+    implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:1.2.3'
+
+    /**
+     * 工具包
+     */
+    implementation 'org.apache.commons:commons-lang3:3.5'
+
+    /**
+     * markdown 解析
+     */
+    implementation 'com.atlassian.commonmark:commonmark:0.8.0'
+    
+    implementation 'com.atlassian.commonmark:commonmark-ext-gfm-tables:0.8.0'
+
+    /**
+     * 过滤emoji字符
+     */
+     implementation 'com.vdurmont:emoji-java:3.2.0'
+
+    /**
+     * Google json
+     */
+    implementation 'com.google.code.gson:gson:2.8.0'
+
+}
